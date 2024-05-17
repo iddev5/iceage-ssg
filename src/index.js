@@ -11,13 +11,47 @@ let imports = {};
 let layouts = [];
 let pages = [];
 
+const version = process.argv.includes("--version");
+if (version) {
+  console.log("iceage 0.1.0");
+  return;
+}
+
+// Initial generation
 gen();
+
+const reload = process.argv.includes("--reload");
+const to_open = process.argv.includes("--open");
+if (reload) {
+  const liveServer = require("live-server");
+  const chokidar = require("chokidar");
+
+  const params = {
+    root: "public",
+    open: to_open,
+    file: "index.html",
+    logLevel: 0,
+  };
+
+  liveServer.start(params);
+  console.log("Live server running at 127.0.0.1:8080/");
+
+  chokidar
+    .watch(["layouts", "imports", "pages", "static"], { ignoreInitial: true })
+    .on("all", (event, path) => {
+      gen();
+    });
+}
 
 function basename(name) {
   return path.parse(name).name;
 }
 
 function gen() {
+  imports = [];
+  layouts = [];
+  pages = [];
+
   // Index all the layouts
   if (fs.existsSync("layouts")) layouts = fs.readdirSync("layouts");
 

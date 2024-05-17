@@ -6,8 +6,9 @@
   {{content}}
   {{imports.footer}}
   
-  {% assign posts = pages | where: "tags", "post" %}
-  {% for post in posts %}
-    <a href="{{post.path}}">{{post.title}}</a>
+  {% for page in pages %}
+    {% if page.tags contains "post" %}
+      <a href="{{page.path}}">{{page.title}}</a>
+    {% endif %}
   {% endfor %}
 </html>

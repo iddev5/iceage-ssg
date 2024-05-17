@@ -61,9 +61,39 @@ function indexAllPages(dir) {
     // Do note that "hello---" still returns two parts ["hello", ""]
     // so no special treatment is necessary
     if (parts.length > 1) {
+      let err = false
       const meta_data = yaml.parse(parts[0]);
-      // TODO: assert that meta data is correct
+      if (typeof meta_data !== "object") {
+        console.error("Expected a map as frontmatter.")
+        err = true
+      }
 
+      if ("title" in meta_data) {
+        if (typeof meta_data.title !== "string") {
+          console.error("Page title should be a string.")
+          err = true
+        }
+      }
+
+      if ("tags" in meta_data) {
+        if (!(meta_data.tags instanceof Array)) {
+          console.error("Page tags should be a list.")
+          err = true
+        }
+      }
+
+      if ("draft" in meta_data) {
+        if (typeof meta_data.draft !== "boolean") {
+          console.error("Page property 'draft' should be a boolean.")
+          err = true
+        }
+      }
+
+      if (err) {
+        process.error("Exited.")
+        return process.exit(process.EXIT_FAILURE)
+      }
+      
       pages.push({ path: full_path, ...meta_data })
     } else {
       pages.push({ path: full_path })

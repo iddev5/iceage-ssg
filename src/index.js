@@ -39,16 +39,24 @@ function indexAllPages(dir) {
       return indexAllPages(page_path)
     }
     
+    const full_path = path.relative("pages", page_path)
+    
     let content = fs.readFileSync(page_path).toString()
     const parts = content.split("---")
-    const meta_data = yaml.parse(parts[0]);
 
-    // TODO: assert that meta data is correct
+    // Treat first part as meta data only if there are multiple parts
+    // For example the string "---hello" returns two parts ["", "hello"]
+    // But "hello" returns only one ["hello"]
+    // Do note that "hello---" still returns two parts ["hello", ""]
+    // so no special treatment is necessary
+    if (parts.length > 1) {
+      const meta_data = yaml.parse(parts[0]);
+      // TODO: assert that meta data is correct
 
-    pages.push({
-      path: path.relative("pages", page_path),
-      ...meta_data
-    })
+      pages.push({ path: full_path, ...meta_data })
+    } else {
+      pages.push({ path: full_path })
+    }
   })
 }
 
@@ -68,10 +76,15 @@ async function genFile(fpath) {
   let content = fs.readFileSync(fpath).toString()
   const parts = content.split("---")
 
-  // TODO: generate meta data once
-  const meta_data = yaml.parse(parts[0]);
+  const meta_path = path.relative("pages", fpath)
+  const meta_data = pages.find((page) => page.path === meta_path)
 
-  content = await renderPage(parts[1], meta_data)
+  // Same logic as indexAllPages regarding parts.length
+  const part_index = Number(parts.length > 1)
+  if (parts[part_index].length > 0)
+    content = await renderPage(parts[part_index], meta_data)
+  else
+    content = ""
   
   // Get the path without pages/ so that it can be append to public/
   const path_rel = path.join("public", path.relative("pages", fpath)) 

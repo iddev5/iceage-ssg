@@ -3,6 +3,7 @@
 const fs = require("fs")
 const path = require("path")
 const { Liquid } = require("liquidjs")
+const yaml = require("yaml")
 
 let liquid = new Liquid()
 
@@ -40,7 +41,7 @@ function indexAllPages(dir) {
     
     let content = fs.readFileSync(page_path).toString()
     const parts = content.split("---")
-    const meta_data = JSON.parse(parts[0]);
+    const meta_data = yaml.parse(parts[0]);
 
     // TODO: assert that meta data is correct
 
@@ -68,7 +69,7 @@ async function genFile(fpath) {
   const parts = content.split("---")
 
   // TODO: generate meta data once
-  const meta_data = JSON.parse(parts[0]);
+  const meta_data = yaml.parse(parts[0]);
 
   content = await renderPage(parts[1], meta_data)
   

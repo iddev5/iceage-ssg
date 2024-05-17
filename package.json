@@ -13,6 +13,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "liquidjs": "^10.13.0"
+    "liquidjs": "^10.13.0",
+    "yaml": "^2.4.2"
   }
 }

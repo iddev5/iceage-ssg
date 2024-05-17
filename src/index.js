@@ -35,7 +35,7 @@ function indexAllPages(dir) {
   ps.forEach((page) => {
     const page_path = path.join(dir, page)
     if (fs.statSync(page_path).isDirectory()) {
-      indexAllPages(page_path)
+      return indexAllPages(page_path)
     }
     
     let content = fs.readFileSync(page_path).toString()
@@ -45,7 +45,7 @@ function indexAllPages(dir) {
     // TODO: assert that meta data is correct
 
     pages.push({
-      path: page,
+      path: path.relative("pages", page_path),
       ...meta_data
     })
   })
@@ -71,7 +71,11 @@ async function genFile(fpath) {
   const meta_data = JSON.parse(parts[0]);
 
   content = await renderPage(parts[1], meta_data)
-  fs.writeFileSync(path.join("public", path.basename(fpath)), content)
+  
+  // Get the path without pages/ so that it can be append to public/
+  const path_rel = path.join("public", path.relative("pages", fpath)) 
+  fs.mkdirSync(path.dirname(path_rel), { recursive: true })
+  fs.writeFileSync(path_rel, content)
 }
 
 async function renderPage(content, meta) {

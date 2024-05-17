@@ -4,13 +4,6 @@ const fs = require("fs")
 const path = require("path")
 const { Liquid } = require("liquidjs")
 
-const src = {
-  pages: "./src/pages",
-  layouts: "./src/layouts",
-  imports: "./src/imports",
-  static: "./src/static",
-}
-
 let liquid = new Liquid()
 
 let imports = {}
@@ -19,24 +12,28 @@ let pages = []
 
 gen()
 
-function gen() {
-  // Index all the layouts
-  layouts = fs.readdirSync(src.layouts)
-  fs.readdirSync(src.imports).forEach((imp) => 
-    imports[imp.split('.')[0]] = fs.readFileSync(`${src.imports}/${imp}`)
-  )
-
-  indexAllPages(src.pages)
-  genDir(src.pages)
-
-  // Copy contents of static into public
-  fs.cpSync(src.static, './public/', { recursive: true })
+function basename(name) {
+  return path.parse(name).name
 }
 
-function indexAllPages(path) {
-  const ps = fs.readdirSync(path)
+function gen() {
+  // Index all the layouts
+  layouts = fs.readdirSync("layouts")
+  fs.readdirSync("imports").forEach((imp) => 
+    imports[basename(imp)] = fs.readFileSync(path.join("imports", imp))
+  )
+
+  indexAllPages("pages")
+  genDir("pages")
+
+  // Copy contents of static into public
+  fs.cpSync("static", "public", { recursive: true })
+}
+
+function indexAllPages(dir) {
+  const ps = fs.readdirSync(dir)
   ps.forEach((page) => {
-    const page_path = `${path}/${page}`
+    const page_path = path.join(dir, page)
     if (fs.statSync(page_path).isDirectory()) {
       indexAllPages(page_path)
     }
@@ -54,28 +51,27 @@ function indexAllPages(path) {
   })
 }
 
-function genDir(path) {
-  const ps = fs.readdirSync(path)
+function genDir(dir) {
+  const ps = fs.readdirSync(dir)
 
   ps.forEach((page) =>
-    genFile(`${path}/${page}`, page)
+    genFile(path.join(dir, page))
   )
 }
 
-
-async function genFile(path, name) {
-  if (fs.statSync(path).isDirectory()) {
-    return genDir(path)
+async function genFile(fpath) {
+  if (fs.statSync(fpath).isDirectory()) {
+    return genDir(fpath)
   }
 
-  let content = fs.readFileSync(path).toString()
+  let content = fs.readFileSync(fpath).toString()
   const parts = content.split("---")
 
   // TODO: generate meta data once
   const meta_data = JSON.parse(parts[0]);
 
   content = await renderPage(parts[1], meta_data)
-  fs.writeFileSync(`./public/${name}`, content)
+  fs.writeFileSync(path.join("public", path.basename(fpath)), content)
 }
 
 async function renderPage(content, meta) {
@@ -88,7 +84,7 @@ async function renderPage(content, meta) {
   if (meta.layout) {
     const new_content = await renderContent()
     
-    let layout = fs.readFileSync(`${src.layouts}/${meta.layout}`).toString()
+    let layout = fs.readFileSync(path.join("layouts", meta.layout)).toString()
     return await liquid.parseAndRender(layout, {
       content: new_content,
       meta: meta,

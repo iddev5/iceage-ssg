@@ -1,0 +1,13 @@
+<html
+  <head>
+    <title>{{meta.title}}</title>
+  </head>
+  {{imports.header}}
+  {{content}}
+  {{imports.footer}}
+  
+  {% assign posts = pages | where: "tags", "post" %}
+  {% for post in posts %}
+    <a href="{{post.path}}">{{post.title}}</a>
+  {% endfor %}
+</html>

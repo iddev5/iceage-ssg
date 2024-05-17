@@ -19,16 +19,27 @@ function basename(name) {
 
 function gen() {
   // Index all the layouts
-  layouts = fs.readdirSync("layouts")
-  fs.readdirSync("imports").forEach((imp) => 
-    imports[basename(imp)] = fs.readFileSync(path.join("imports", imp))
-  )
+  if (fs.existsSync("layouts"))
+    layouts = fs.readdirSync("layouts")
 
-  indexAllPages("pages")
-  genDir("pages")
+  if (fs.existsSync("imports"))
+    fs.readdirSync("imports").forEach((imp) => 
+      imports[basename(imp)] = fs.readFileSync(path.join("imports", imp))
+    )
+
+  if (fs.existsSync("pages")) {
+    indexAllPages("pages")
+    genDir("pages")
+  } else {
+    console.error("No pages to render.")
+    return
+  }
 
   // Copy contents of static into public
-  fs.cpSync("static", "public", { recursive: true })
+  if (fs.existsSync("static"))
+    fs.cpSync("static", "public", { recursive: true })
+
+  console.log("Site written to ./public")
 }
 
 function indexAllPages(dir) {
@@ -102,7 +113,13 @@ async function renderPage(content, meta) {
   if (meta.layout) {
     const new_content = await renderContent()
     
-    let layout = fs.readFileSync(path.join("layouts", meta.layout)).toString()
+    const layout_name = path.join("layouts", meta.layout)
+    if (!fs.existsSync(layout_name)) {
+      console.error(`Layout ${meta.layout} not found.\nExiting.`)
+      return process.exit(process.EXIT_FAILURE)
+    }
+    
+    let layout = fs.readFileSync(layout_name).toString()
     return await liquid.parseAndRender(layout, {
       content: new_content,
       meta: meta,

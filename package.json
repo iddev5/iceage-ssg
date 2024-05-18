@@ -1,5 +1,5 @@
 {
-  "name": "iceage-ssg",
+  "name": "iceage",
   "version": "0.1.0",
   "description": "Small, simple static site generator",
   "main": "src/index.js",
@@ -7,11 +7,33 @@
     "iceage": "./src/index.js"
   },
   "scripts": {
-    "start": "node src/index.js"
+    "start": "node src/index.js",
+    "dev": "node src/index.js --reload"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "homepage": "https://github.com/iddev5/iceage-ssg",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iddev5/iceage-ssg.git"
+  },
+  "bugs": {
+    "url": "https://github.com/iddev5/iceage-ssg/issues"
+  },
+  "keywords": [
+    "ssg",
+    "static-site-generator",
+    "static-site",
+    "generator",
+    "website",
+    "blog",
+    "documentation",
+    "docs",
+    "framework",
+    "html",
+    "liquid",
+    "liquid-js"
+  ],
+  "author": "Ayush Bardhan Tripathy",
+  "license": "MIT",
   "dependencies": {
     "chokidar": "^3.6.0",
     "liquidjs": "^10.13.0",

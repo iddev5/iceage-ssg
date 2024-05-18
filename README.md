@@ -5,7 +5,7 @@ Written in JavaScript. Iceage operates on HTML files with Liquid templates embed
 
 ## Installation
 ```sh
-npm install --save-dev iceage
+npm install --save-dev iceage-ssg
 ```
 
 Once installed, check the version using:

@@ -13,7 +13,7 @@ let pages = [];
 
 const version = process.argv.includes("--version");
 if (version) {
-  console.log("iceage 0.1.0");
+  console.log("iceage 0.1.2");
   return;
 }
 

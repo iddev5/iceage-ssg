@@ -7,7 +7,18 @@ Written in JavaScript. Iceage operates on HTML files with Liquid templates embed
 ```sh
 npm install --save-dev iceage-ssg
 ```
+Once installed, you can add the command invocation in your package.json
+```json
+"scripts": {
+  "dev": "iceage --reload --open",
+  "build": "iceage"
+}
+```
 
+iceage can also be installed globally as:
+```sh
+npm install --global iceage-ssg
+```
 Once installed, check the version using:
 ```sh
 iceage --version

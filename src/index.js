@@ -66,6 +66,19 @@ function gen() {
     genDir("pages");
   } else {
     console.error("No pages to render.");
+
+    try {
+      fs.rmdirSync("public");
+    } catch (e) {
+      if (e.code == "ENOENT") {
+      } else if (e.code == "ENOTEMPTY") {
+        console.warn(
+          "public/ is not empty. Possibly residue from other projects."
+        );
+        console.log("Consider removing public/ for correct results.");
+      }
+    }
+
     return;
   }
 

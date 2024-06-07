@@ -172,14 +172,14 @@ async function genFile(fpath) {
 
 async function renderPage(content, meta) {
   const renderContent = () =>
-    liquid.parseAndRender(content, {
+    liquid.parseAndRenderSync(content, {
       imports: imports,
       pages: pages,
       ...meta,
     });
 
   if (meta.layout) {
-    const new_content = await renderContent();
+    const new_content = renderContent();
 
     const layout_name = path.join("layouts", meta.layout);
     if (!fs.existsSync(layout_name)) {
@@ -188,13 +188,13 @@ async function renderPage(content, meta) {
     }
 
     let layout = fs.readFileSync(layout_name).toString();
-    return await liquid.parseAndRender(layout, {
+    return liquid.parseAndRenderSync(layout, {
       content: new_content,
       meta: meta,
       pages: pages,
       imports: imports,
     });
   } else {
-    return await renderContent();
+    return renderContent();
   }
 }

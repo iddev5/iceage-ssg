@@ -17,6 +17,9 @@ if (version) {
   return;
 }
 
+const generate_draft =
+  process.argv.includes("-d") || process.argv.includes("--gen-draft");
+
 // Initial generation
 gen();
 
@@ -144,8 +147,13 @@ function indexAllPages(dir) {
         return process.exit(process.EXIT_FAILURE);
       }
 
-      // Do not generate draft pages
-      if (meta_data !== undefined && "draft" in meta_data && meta_data.draft)
+      // Do not generate draft pages (unless generate draft is set to true)
+      if (
+        meta_data !== undefined &&
+        "draft" in meta_data &&
+        meta_data.draft &&
+        !generate_draft
+      )
         return;
 
       pages.push({ path: full_path, ...meta_data });

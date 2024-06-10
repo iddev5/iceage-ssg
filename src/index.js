@@ -63,6 +63,9 @@ function gen() {
 
   if (fs.existsSync("pages")) {
     indexAllPages("pages");
+
+    // Render of posts which are no longer may still be present
+    fs.rmSync("public", { recursive: true });
     genDir("pages");
   } else {
     console.error("No pages to render.");
